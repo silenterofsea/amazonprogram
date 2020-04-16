@@ -6,6 +6,10 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+import random
+from .settings import USER_AGENT_LIST, RANDOM_PROXY_URL
+import requests
+
 
 
 class ScrapyamaSpiderMiddleware(object):
@@ -101,3 +105,24 @@ class ScrapyamaDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+# 定义一个UserAgent的中间件, 属于DownloaderMiddleware
+class RandomUserAgent(object):
+    def process_request(self, request, spider):
+        ua = random.choice(USER_AGENT_LIST)
+        request.headers["User-Agent"] = ua
+
+# 设置代理, 属于DownloaderMiddleware
+class ProxyMiddleware(object):
+    def process_request(self, request, spider):
+        request.meta['proxy'] = self.get_proxy()
+    def get_proxy(self):
+        try:
+            res = requests.get(RANDOM_PROXY_URL)
+            if res.status_code == 200:
+                return  res.text
+        except:
+            return None
+
+class SeleniumMiddleware(object):
+    pass

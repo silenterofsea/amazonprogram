@@ -1,0 +1,1 @@
+PROXY_POOL_URL = 'https://123.123.123.123:5555/random'
